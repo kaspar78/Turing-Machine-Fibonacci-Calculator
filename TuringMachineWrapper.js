@@ -4,23 +4,26 @@ const ends = (n) => n + wordLength - 1;
 const f_approx = (n) => (Math.pow(1.62, n) - Math.pow(1.62, -n)) / Math.sqrt(5);
 const wordLength = Math.ceil(Math.log2(f_approx(process.argv[2])));
 
-let num1Begins = 0;
-let num1Ends = ends(num1Begins);
+let registerABegins = 0;
+let registerAEnds = ends(num1Begins);
 
-let num2Begins = num1Ends + 1;
-let num2Ends = ends(num2Begins);
+let registerBBegins = num1Ends + 1;
+let registerBEnds = ends(num2Begins);
 
-let tempNumBegins = num2Ends + 2;
-let tempNumEnds = ends(tempNumBegins);
+let sumRegisterBegins = num2Ends + 2;
+let sumRegisterEnds = ends(tempNumBegins);
 
 class TuringMachineWrapper {
   constructor() {
     this.machine = new TuringMachine(tempNumEnds);
-    console.log("INI: ", this.displayTape());
+    this.display("INI");
   }
 
   /**
-   * Adds the two values at num1Begins and num2Begins and writes them to num1Begins, using sum and minus methods for swapping
+   * A function that adds two values from two registers and adds their contents bitwise.
+   * @param {A|B|SUM} register1     A register that stores one number
+   * @param {A|B|SUM} register2     A register that stores one number
+   * @param {A|B|SUM} registerStore The register to store the num of the numbers kept in @param register1 and @param register2. This could be the same register as @param register1 or @param register2.
    */
   add(register1, register2, registerStore) {
     let register1Ends = this.determineIndexEnds(register1);
@@ -46,7 +49,7 @@ class TuringMachineWrapper {
       this.carryFrom(registerStoreEnds - i);
     }
 
-    console.log("ADD: ", this.displayTape());
+    this.display("ADD");
   }
 
   carryFrom(index) {
@@ -64,22 +67,22 @@ class TuringMachineWrapper {
   determineIndexBegins(REGISTER) {
     switch (REGISTER) {
       case "SUM":
-        return tempNumBegins;
+        return sumRegisterBegins;
       case "A":
-        return num1Begins;
+        return registerABegins;
       case "B":
-        return num2Begins;
+        return registerBBegins;
     }
   }
 
   determineIndexEnds(REGISTER) {
     switch (REGISTER) {
       case "SUM":
-        return tempNumEnds;
+        return sumRegisterEnds;
       case "A":
-        return num1Ends;
+        return registerAEnds;
       case "B":
-        return num2Ends;
+        return registerBEnds;
     }
   }
 
@@ -95,24 +98,14 @@ class TuringMachineWrapper {
       this.machine.write();
     }
 
-    if (shouldDisplay) console.log("CPY: ", this.displayTape());
-  }
-
-  loadA(number) {
-    this.loadAt(number, num1Begins);
-    console.log("LDA: ", this.displayTape());
-  }
-
-  loadB(number) {
-    this.loadAt(number, num2Begins);
-    console.log("LDB: ", this.displayTape());
+    if (shouldDisplay) this.display("CPY");
   }
 
   load(register, number) {
     let registerBegins = this.determineIndexBegins(register);
 
     this.loadAt(number, registerBegins);
-    console.log("LD" + register[0] + ": ", this.displayTape());
+    this.display("LD" + register[0]);
   }
 
   loadAt(number, beginIndex) {
@@ -128,11 +121,11 @@ class TuringMachineWrapper {
     }
   }
 
-  displayTape() {
+  display(command) {
     let stringified = JSON.stringify(
       this.machine.tape.map((entry) => entry.toString())
     );
-    return stringified.split('"').join("");
+    return `${command}: ${stringified.split('"').join("")}`;
   }
 
   moveTo(tapeIndex) {

@@ -6,7 +6,7 @@ const n = process.argv[2];
 
 const TuringMachineWrapper = require("./TuringMachineWrapper");
 
-// Every computation is done with a turing machine, though there is a wrapper around it for abstraction purposes
+// Every computation is done with a turing machine, though there is a wrapper around it for abstraction purposes.
 
 // PROCESS:
 // 1. Determine how many bits are needed to store the nth number
@@ -16,7 +16,6 @@ const TuringMachineWrapper = require("./TuringMachineWrapper");
 // 5. Copy register B to register A, and SUM register to register B
 // 6. Repeat up until n
 
-// TEST: add 0 to 1 and store it in tape where 0 was
 const machine = new TuringMachineWrapper();
 
 // Write a 0 to register A
